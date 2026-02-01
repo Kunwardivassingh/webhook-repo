@@ -12,51 +12,56 @@ def utc_time():
 
 @app.route("/webhook", methods=["POST"])
 def github_webhook():
-    payload = request.json
-    event = request.headers.get("X-GitHub-Event")
+    try:
+        payload = request.json
+        event = request.headers.get("X-GitHub-Event")
 
-    data = {}
+        data = None
 
-    # PUSH EVENT
-    if event == "push":
-        data = {
-            "request_id": payload["after"],
-            "author": payload["pusher"]["name"],
-            "action": "PUSH",
-            "from_branch": None,
-            "to_branch": payload["ref"].split("/")[-1],
-            "timestamp": utc_time()
-        }
-
-    # PULL REQUEST EVENT
-    elif event == "pull_request":
-        pr = payload["pull_request"]
-        action_type = payload["action"]
-
-        # MERGE
-        if action_type == "closed" and pr["merged"]:
+        if event == "push":
             data = {
-                "request_id": str(pr["id"]),
-                "author": pr["merged_by"]["login"],
-                "action": "MERGE",
-                "from_branch": pr["head"]["ref"],
-                "to_branch": pr["base"]["ref"],
-                "timestamp": utc_time()
-            }
-        else:
-            data = {
-                "request_id": str(pr["id"]),
-                "author": pr["user"]["login"],
-                "action": "PULL_REQUEST",
-                "from_branch": pr["head"]["ref"],
-                "to_branch": pr["base"]["ref"],
+                "request_id": payload.get("after"),
+                "author": payload.get("pusher", {}).get("name"),
+                "action": "PUSH",
+                "from_branch": None,
+                "to_branch": payload.get("ref", "").split("/")[-1],
                 "timestamp": utc_time()
             }
 
-    if data:
-        collection.insert_one(data)
+        elif event == "pull_request":
+            pr = payload.get("pull_request", {})
+            action_type = payload.get("action")
 
-    return jsonify({"status": "success"}), 200
+            if action_type == "closed" and pr.get("merged"):
+                data = {
+                    "request_id": str(pr.get("id")),
+                    "author": pr.get("merged_by", {}).get("login"),
+                    "action": "MERGE",
+                    "from_branch": pr.get("head", {}).get("ref"),
+                    "to_branch": pr.get("base", {}).get("ref"),
+                    "timestamp": utc_time()
+                }
+            else:
+                data = {
+                    "request_id": str(pr.get("id")),
+                    "author": pr.get("user", {}).get("login"),
+                    "action": "PULL_REQUEST",
+                    "from_branch": pr.get("head", {}).get("ref"),
+                    "to_branch": pr.get("base", {}).get("ref"),
+                    "timestamp": utc_time()
+                }
+
+        if data:
+            collection.insert_one(data)
+
+        return jsonify({"status": "success"}), 200
+
+    except Exception as e:
+        print("Webhook error:", e)
+        return jsonify({"error": "internal error"}), 500
+
+
+    
 
 
 @app.route("/events", methods=["GET"])
