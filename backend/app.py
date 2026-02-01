@@ -16,6 +16,8 @@ def github_webhook():
         payload = request.json
         event = request.headers.get("X-GitHub-Event")
 
+        print("Received event:", event)
+
         data = None
 
         if event == "push":
@@ -53,14 +55,11 @@ def github_webhook():
 
         if data:
             result = collection.insert_one(data)
-            print("Inserted document ID:", result.inserted_id)
+            print("✅ Inserted into MongoDB:", result.inserted_id)
+        else:
+            print("⚠️ No data generated for this event")
 
-        return jsonify({"status": "success"}), 200
-    
-        # if data:
-        #     result = collection.insert_one(data)
-        #     print("Inserted document ID:", result.inserted_id)
-
+        return jsonify({"status": "ok"}), 200
 
     except Exception as e:
         print("Webhook error:", e)
@@ -75,6 +74,8 @@ def get_events():
     events = list(
         collection.find({}, {"_id": 0}).sort("timestamp", -1)
     )
+    print("Events fetched:", len(events))
+
     return jsonify(events)
     
 
