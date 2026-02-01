@@ -52,13 +52,14 @@ def github_webhook():
                 }
 
         if data:
-            collection.insert_one(data)
+            result = collection.insert_one(data)
+            print("Inserted document ID:", result.inserted_id)
 
         return jsonify({"status": "success"}), 200
     
-        if data:
-            result = collection.insert_one(data)
-            print("Inserted document ID:", result.inserted_id)
+        # if data:
+        #     result = collection.insert_one(data)
+        #     print("Inserted document ID:", result.inserted_id)
 
 
     except Exception as e:
