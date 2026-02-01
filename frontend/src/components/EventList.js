@@ -1,17 +1,36 @@
 import React from "react";
 
+const formatTimestamp = (timestamp) => {
+  const date = new Date(timestamp);
+
+  return date.toLocaleString("en-US", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+    timeZone: "UTC",
+    timeZoneName: "short",
+  });
+};
+
 const formatText = (event) => {
+  const time = formatTimestamp(event.timestamp);
+
   if (event.action === "PUSH") {
-    return `${event.author} pushed to ${event.to_branch}`;
+    return `${event.author} pushed to ${event.to_branch} on ${time}`;
   }
 
   if (event.action === "PULL_REQUEST") {
-    return `${event.author} submitted a pull request`;
+    return `${event.author} submitted a pull request from ${event.from_branch} to ${event.to_branch} on ${time}`;
   }
 
   if (event.action === "MERGE") {
-    return `${event.author} merged branch ${event.from_branch} → ${event.to_branch}`;
+    return `${event.author} merged branch ${event.from_branch} to ${event.to_branch} on ${time}`;
   }
+
+  return "Unknown event";
 };
 
 export default function EventList({ events }) {
@@ -27,13 +46,7 @@ export default function EventList({ events }) {
 
           <p style={styles.text}>{formatText(event)}</p>
 
-          {event.from_branch && (
-            <p style={styles.branch}>
-              {event.from_branch} → {event.to_branch}
-            </p>
-          )}
-
-          <p style={styles.time}>{event.timestamp}</p>
+          <p style={styles.time}>{formatTimestamp(event.timestamp)}</p>
         </div>
       ))}
     </div>
@@ -61,11 +74,6 @@ const styles = {
   text: {
     fontSize: "16px",
     fontWeight: "500",
-    marginBottom: "6px",
-  },
-  branch: {
-    fontSize: "14px",
-    color: "#444",
     marginBottom: "6px",
   },
   time: {
