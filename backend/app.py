@@ -55,6 +55,11 @@ def github_webhook():
             collection.insert_one(data)
 
         return jsonify({"status": "success"}), 200
+    
+        if data:
+            result = collection.insert_one(data)
+            print("Inserted document ID:", result.inserted_id)
+
 
     except Exception as e:
         print("Webhook error:", e)
