@@ -16,10 +16,10 @@ const formatTimestamp = (timestamp) => {
 };
 
 const formatText = (event) => {
-  const time = formatTimestamp(event.timestamp);
+  // const time = formatTimestamp(event.timestamp);
 
   if (event.action === "PUSH") {
-    return `${event.author} pushed to ${event.to_branch} on ${time}`;
+    return `${event.author} pushed to ${event.to_branch} on ${event.timestamp}`;
   }
 
   if (event.action === "PULL_REQUEST") {
