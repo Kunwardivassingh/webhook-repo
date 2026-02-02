@@ -46,7 +46,7 @@ export default function EventList({ events }) {
 
           <p style={styles.text}>{formatText(event)}</p>
 
-          <p style={styles.time}>{formatTimestamp(event.timestamp)}</p>
+          {/* <p style={styles.time}>{formatTimestamp(event.timestamp)}</p> */}
         </div>
       ))}
     </div>
