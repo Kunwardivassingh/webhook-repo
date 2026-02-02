@@ -23,11 +23,11 @@ const formatText = (event) => {
   }
 
   if (event.action === "PULL_REQUEST") {
-    return `${event.author} submitted a pull request from ${event.from_branch} to ${event.to_branch} on ${time}`;
+    return `${event.author} submitted a pull request from ${event.from_branch} to ${event.to_branch} on ${event.timestamp}`;
   }
 
   if (event.action === "MERGE") {
-    return `${event.author} merged branch ${event.from_branch} to ${event.to_branch} on ${time}`;
+    return `${event.author} merged branch ${event.from_branch} to ${event.to_branch} on ${event.timestamp}`;
   }
 
   return "Unknown event";
