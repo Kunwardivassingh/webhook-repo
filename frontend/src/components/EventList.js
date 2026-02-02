@@ -16,7 +16,6 @@ const formatTimestamp = (timestamp) => {
 };
 
 const formatText = (event) => {
-  // const time = formatTimestamp(event.timestamp);
 
   if (event.action === "PUSH") {
     return `${event.author} pushed to ${event.to_branch} on ${event.timestamp}`;
@@ -46,7 +45,6 @@ export default function EventList({ events }) {
 
           <p style={styles.text}>{formatText(event)}</p>
 
-          {/* <p style={styles.time}>{formatTimestamp(event.timestamp)}</p> */}
         </div>
       ))}
     </div>
